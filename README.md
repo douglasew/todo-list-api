@@ -48,6 +48,13 @@ cd ..
 java -jar target/todo-list-api.jar
 ```
 
-## Documentação da API
+## 🚀 Tecnologias utilizadas
+
+- Java 17
+- Spring Boot
+- Spring Security 6
+- OAuth2 Resource Server
+
+## Documentação da API 
 
 Você pode acessar a documentação da API em http://localhost:8080/swagger-ui.html.
