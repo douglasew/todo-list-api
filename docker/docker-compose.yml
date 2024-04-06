@@ -1,13 +1,11 @@
 services:
-  mysql:
+  postgres:
     image: postgres:latest
     container_name: postgres_container
     ports:
-      - "3306:3306"
-    expose:
-      - "3306"
+      - "5432:5432"
     environment:
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=123
-      - MYSQL_DATABASE=mydb
-      - MYSQL_ROOT_PASSWORD=123
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: mydb
+      POSTGRES_ROOT_PASSWORD: 123
