@@ -1,6 +1,7 @@
 package com.todolist.api.controllers;
 
 import com.todolist.api.dtos.UserRequestDTO;
+import com.todolist.api.dtos.UserResponseDTO;
 import com.todolist.api.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/")
-    public ResponseEntity<Object> show(){
+    public ResponseEntity<UserResponseDTO> show(){
         return this.userService.show();
     }
 

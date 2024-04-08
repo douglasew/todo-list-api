@@ -29,12 +29,12 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> show(@PathVariable String id) {
+    public ResponseEntity<TaskResponseDTO> show(@PathVariable String id) {
         return this.taskService.show(id);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable String id, @RequestBody TaskRequestUpdateDTO data){
+    public ResponseEntity<TaskRequestUpdateDTO> update(@PathVariable String id, @RequestBody TaskRequestUpdateDTO data){
         return  this.taskService.update(id, data);
     }
 

@@ -1,6 +1,7 @@
 package com.todolist.api.controllers;
 
 import com.todolist.api.dtos.AuthDTO;
+import com.todolist.api.dtos.AuthResponseDTO;
 import com.todolist.api.dtos.UserRequestDTO;
 import com.todolist.api.services.AuthService;
 import jakarta.validation.Valid;
@@ -17,7 +18,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid AuthDTO data){
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthDTO data){
        return this.authService.login(data);
     }
 
