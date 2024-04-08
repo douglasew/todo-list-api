@@ -10,11 +10,12 @@ import com.todolist.api.exceptions.PreviousDateTaskException;
 import com.todolist.api.exceptions.TaskDoesNotExistException;
 import com.todolist.api.exceptions.UnauthorizedUserException;
 import com.todolist.api.repositories.TaskRepository;
-import com.todolist.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,17 +29,12 @@ public class  TaskService {
     private TaskRepository taskRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
+    private UserDetailsServiceImpl userDetailsService;
 
     public ResponseEntity<Object> create(TaskRequestDTO data){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        var user = this.userDetailsServiceImpl.loadUserByUsername(username);
+        User user = user();
 
         dateValidation(data);
-
         data.setUser((User) user);
         var newTask = new Task(data);
         this.taskRepository.save(newTask);
@@ -66,7 +62,7 @@ public class  TaskService {
         return taskResponses;
     }
 
-    public ResponseEntity<Object> show(String id){
+    public ResponseEntity<TaskResponseDTO> show(String id){
         var task = taskRepository.findById(id).orElse(null);
         userPermission(id);
 
@@ -84,7 +80,7 @@ public class  TaskService {
         return ResponseEntity.status(HttpStatus.OK).body(taskResponse);
     }
 
-    public  ResponseEntity<Object> update(String id, TaskRequestUpdateDTO data){
+    public  ResponseEntity<TaskRequestUpdateDTO> update(String id, TaskRequestUpdateDTO data){
         var task = this.taskRepository.findById(id).orElse(null);
         userPermission(id);
 
@@ -118,8 +114,9 @@ public class  TaskService {
     }
 
     private User user(){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return this.userRepository.findUserByUsername(username);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+        return (User) userDetails;
     }
 
     private void userPermission(String id){

@@ -9,7 +9,9 @@ import com.todolist.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,11 +25,14 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
     public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "\\storage" + "\\uploads\\";
 
-    public ResponseEntity<Object> show(){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        var user = this.userRepository.findUserByUsername(username);
+    public ResponseEntity<UserResponseDTO> show(){
+        User user = user();
+
         var details = new UserResponseDTO(
                 user.getName(),
                 user.getUsername(),
@@ -41,7 +46,7 @@ public class UserService {
     public ResponseEntity<Object> edit(UserRequestDTO data){
         User user = user();
 
-        if(!data.getUsername().equals(user.getUsername()) && this.userRepository.findUserByUsername(data.getUsername()) != null){
+        if(!data.getUsername().equals(user.getUsername()) && this.userDetailsService.loadUserByUsername(data.getUsername()) != null){
             throw new UsernameAlreadyExistException();
         }
 
@@ -62,8 +67,8 @@ public class UserService {
     }
 
     public ResponseEntity<String> delete(){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        var user = this.userRepository.findUserByUsername(username);
+        User user = user();
+
         var userId = user.getId();
         this.userRepository.deleteById(userId);
 
@@ -84,7 +89,8 @@ public class UserService {
     }
 
     private User user(){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return this.userRepository.findUserByUsername(username);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+        return (User) userDetails;
     }
 }

@@ -22,8 +22,10 @@ public class ManagerService {
     @Autowired
     private UserRepository userRepository;
 
+    private UserDetailsServiceImpl userDetailsService;
+
      public ResponseEntity<Object> create(UserRequestDTO data){
-        if(this.userRepository.findByUsername(data.getUsername()) != null){
+        if(this.userDetailsService.loadUserByUsername(data.getUsername()) != null){
             throw new UsernameAlreadyExistException();
         }
 

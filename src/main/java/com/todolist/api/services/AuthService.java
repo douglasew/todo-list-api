@@ -28,14 +28,13 @@ public class AuthService {
     @Autowired
     private JwtService jwtService;
 
-    public ResponseEntity<Object> login(AuthDTO data){
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
+    public ResponseEntity<AuthResponseDTO> login(AuthDTO data){
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.getUsername(), data.getPassword());
 
         var auth = authenticationManager.authenticate(usernamePassword);
-
-        if(!auth.isAuthenticated()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect username or password");
-        }
 
         var token = jwtService.generateToken(auth);
         var authToken = new AuthResponseDTO(token);
@@ -44,7 +43,7 @@ public class AuthService {
     }
 
     public ResponseEntity<Object> register(UserRequestDTO data){
-        if(this.userRepository.findByUsername(data.getUsername()) != null){
+        if(this.userDetailsService.loadUserByUsername(data.getUsername()) != null){
             throw new UsernameAlreadyExistException();
         }
 
