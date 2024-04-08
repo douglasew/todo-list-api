@@ -58,4 +58,3 @@ public class ManagerService {
         return ResponseEntity.status(HttpStatus.OK).body(details);
     }
 }
-

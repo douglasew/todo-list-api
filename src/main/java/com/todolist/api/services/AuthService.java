@@ -61,4 +61,3 @@ public class AuthService {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
-
