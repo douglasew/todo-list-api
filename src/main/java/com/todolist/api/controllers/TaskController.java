@@ -8,6 +8,8 @@ import com.todolist.api.dtos.TaskResponseDTO;
 import com.todolist.api.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +26,8 @@ public class TaskController {
     }
 
     @GetMapping("/")
-    public List<TaskResponseDTO> index() {
-        return this.taskService.index();
+    public Page<TaskResponseDTO> index(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Pageable pageable) {
+        return this.taskService.index(page, size, pageable);
     }
 
     @GetMapping("/{id}")

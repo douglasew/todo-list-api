@@ -8,13 +8,14 @@ import com.todolist.api.exceptions.EmailAlreadyExistException;
 import com.todolist.api.exceptions.UsernameAlreadyExistException;
 import com.todolist.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ManagerService {
@@ -22,6 +23,7 @@ public class ManagerService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
      public ResponseEntity<Object> create(UserRequestDTO data){
@@ -44,17 +46,21 @@ public class ManagerService {
          return ResponseEntity.status(HttpStatus.CREATED).build();
      }
 
-    public ResponseEntity<Object> index() {
-         var users = this.userRepository.findAll();
+    public Page<UserResponseDTO> index(int page, int size, Pageable pageable) {
+        Sort sort = Sort.by(
+                Sort.Order.asc("role")
+        );
 
-         List<UserResponseDTO> details = users.stream().map(user -> new UserResponseDTO(
-                 user.getName(),
-                 user.getUsername(),
-                 user.getEmail(),
-                 user.getPhoto(),
-                 user.getRole().getName()
-         )).collect(Collectors.toList());
+        pageable = PageRequest.of(page,size,sort);
 
-        return ResponseEntity.status(HttpStatus.OK).body(details);
+        Page<User> users = this.userRepository.findAll(pageable);
+
+        return users.map(user -> new UserResponseDTO(
+                user.getName(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPhoto(),
+                user.getRole().getName()
+        ));
     }
 }

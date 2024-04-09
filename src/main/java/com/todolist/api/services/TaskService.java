@@ -11,6 +11,10 @@ import com.todolist.api.exceptions.TaskDoesNotExistException;
 import com.todolist.api.exceptions.UnauthorizedUserException;
 import com.todolist.api.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,9 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class  TaskService {
@@ -42,24 +44,26 @@ public class  TaskService {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public List<TaskResponseDTO> index(){
+    public Page<TaskResponseDTO> index(int page, int size, Pageable pageable){
         var user = user();
 
-        List<Task> tasks = this.taskRepository.findByUser(user);
-        List<TaskResponseDTO> taskResponses = new ArrayList<>();
+        Sort sort = Sort.by(
+                Sort.Order.desc("createdAt"),
+                Sort.Order.asc("priority")
+        );
 
-        for (Task task : tasks) {
-            TaskResponseDTO taskResponse = new TaskResponseDTO(
-                    task.getId(),
-                    task.getTitle(),
-                    task.getDescription(),
-                    task.getPriority().getName(),
-                    task.getStartAt(),
-                    task.getEndAt()
-            );
-            taskResponses.add(taskResponse);
-        }
-        return taskResponses;
+        pageable = PageRequest.of(page, size, sort);
+
+        Page<Task> tasks = this.taskRepository.findByUser(user, pageable);
+
+        return tasks.map(task -> new TaskResponseDTO(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getPriority().getName(),
+                task.getStartAt(),
+                task.getEndAt()
+        ));
     }
 
     public ResponseEntity<TaskResponseDTO> show(String id){
