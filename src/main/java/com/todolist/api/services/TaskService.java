@@ -85,26 +85,14 @@ public class  TaskService {
     }
 
     public  ResponseEntity<TaskRequestUpdateDTO> update(String id, TaskRequestUpdateDTO data){
-        var task = this.taskRepository.findById(id).orElse(null);
+        Task task = this.taskRepository.findById(id).orElseThrow(TaskDoesNotExistException::new);
         userPermission(id);
 
-        assert task != null;
-
-        if(data.title() != null){
-            task.setTitle(data.title());
-        }
-        if(data.title() != null){
-            task.setDescription(data.description());
-        }
-        if(data.priority() != null){
-            task.setPriority(data.priority());
-        }
-        if(data.startAt() != null){
-            task.setStartAt(data.startAt());
-        }
-        if(data.endAt() != null){
-            task.setEndAt(data.endAt());
-        }
+        task.setTitle(data.title());
+        task.setDescription(data.description());
+        task.setPriority(data.priority());
+        task.setStartAt(data.startAt());
+        task.setEndAt(data.endAt());
 
         this.taskRepository.save(task);
         return ResponseEntity.status(HttpStatus.OK).build();
