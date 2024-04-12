@@ -1,6 +1,8 @@
 package com.todolist.api.dtos;
 
-import java.sql.Timestamp;
+import com.todolist.api.enums.Status;
 
-public record TaskResponseDTO(String id, String title, String description, String priority, Timestamp startAt, Timestamp endAt) {
+import java.time.LocalDate;
+
+public record TaskResponseDTO(String id, String title, String description, String priority, LocalDate startAt, LocalDate endAt, Status status) {
 }

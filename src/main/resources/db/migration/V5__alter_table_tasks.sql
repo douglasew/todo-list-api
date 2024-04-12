@@ -1,0 +1,4 @@
+ALTER TABLE tasks
+    ALTER COLUMN "start_at" TYPE DATE,
+    ALTER COLUMN "end_at" TYPE DATE,
+    ADD COLUMN "status" VARCHAR(20);

@@ -1,9 +1,10 @@
 package com.todolist.api.dtos;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import com.todolist.api.domain.priority.Priority;
 import com.todolist.api.domain.user.User;
+import com.todolist.api.enums.Status;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -23,14 +24,16 @@ public class TaskRequestDTO {
 
     @NotNull(message = "Enter the start date")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private Timestamp startAt;
+    private LocalDate startAt;
 
     @NotNull(message = "Enter the end date")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private Timestamp endAt;
+    private LocalDate endAt;
 
     @NotNull(message = "Enter the priority")
     private Priority priority;
+
+    private Status status;
 
     private User user;
 }

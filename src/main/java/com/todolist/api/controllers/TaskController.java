@@ -1,9 +1,6 @@
 package com.todolist.api.controllers;
 
-import java.util.List;
-
 import com.todolist.api.dtos.TaskRequestDTO;
-import com.todolist.api.dtos.TaskRequestUpdateDTO;
 import com.todolist.api.dtos.TaskResponseDTO;
 import com.todolist.api.services.TaskService;
 import jakarta.validation.Valid;
@@ -36,7 +33,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TaskRequestUpdateDTO> update(@PathVariable String id, @RequestBody TaskRequestUpdateDTO data){
+    public ResponseEntity<TaskRequestDTO> update(@PathVariable String id, @RequestBody TaskRequestDTO data){
         return  this.taskService.update(id, data);
     }
 

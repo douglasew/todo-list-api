@@ -1,12 +1,12 @@
 package com.todolist.api.domain.task;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.todolist.api.domain.priority.Priority;
 import com.todolist.api.domain.user.User;
 import com.todolist.api.dtos.TaskRequestDTO;
-import com.todolist.api.dtos.TaskRequestUpdateDTO;
+import com.todolist.api.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,11 +29,13 @@ public class Task {
 
     private String description;
 
+    private Status status;
+
     @Column(name = "start_at")
-    private Timestamp startAt;
+    private LocalDate startAt;
 
     @Column(name = "end_at")
-    private Timestamp endAt;
+    private LocalDate endAt;
 
     @ManyToOne
     @JoinColumn(name = "priority_id")
@@ -58,13 +60,6 @@ public class Task {
         this.startAt = taskRequestDTO.getStartAt();
         this.endAt = taskRequestDTO.getEndAt();
         this.user = taskRequestDTO.getUser();
-    }
-
-    public Task(TaskRequestUpdateDTO taskRequestUpdateDTO){
-        this.title = taskRequestUpdateDTO.title();
-        this.description = taskRequestUpdateDTO.description();
-        this.startAt = taskRequestUpdateDTO.startAt();
-        this.endAt = taskRequestUpdateDTO.endAt();
-        this.priority = taskRequestUpdateDTO.priority();
+        this.status = taskRequestDTO.getStatus();
     }
 }

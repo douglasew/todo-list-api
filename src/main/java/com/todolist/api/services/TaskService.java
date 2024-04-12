@@ -3,8 +3,8 @@ package com.todolist.api.services;
 import com.todolist.api.domain.task.Task;
 import com.todolist.api.domain.user.User;
 import com.todolist.api.dtos.TaskRequestDTO;
-import com.todolist.api.dtos.TaskRequestUpdateDTO;
 import com.todolist.api.dtos.TaskResponseDTO;
+import com.todolist.api.enums.Status;
 import com.todolist.api.exceptions.InvalidDateRangeException;
 import com.todolist.api.exceptions.PreviousDateTaskException;
 import com.todolist.api.exceptions.TaskDoesNotExistException;
@@ -22,7 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Service
 public class  TaskService {
@@ -38,6 +38,7 @@ public class  TaskService {
 
         dateValidation(data);
         data.setUser((User) user);
+        data.setStatus(Status.IN_PROGRESS);
         var newTask = new Task(data);
         this.taskRepository.save(newTask);
 
@@ -62,7 +63,8 @@ public class  TaskService {
                 task.getDescription(),
                 task.getPriority().getName(),
                 task.getStartAt(),
-                task.getEndAt()
+                task.getEndAt(),
+                task.getStatus()
         ));
     }
 
@@ -78,21 +80,22 @@ public class  TaskService {
                 task.getDescription(),
                 task.getPriority().getName(),
                 task.getStartAt(),
-                task.getEndAt()
+                task.getEndAt(),
+                task.getStatus()
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(taskResponse);
     }
 
-    public  ResponseEntity<TaskRequestUpdateDTO> update(String id, TaskRequestUpdateDTO data){
+    public  ResponseEntity<TaskRequestDTO> update(String id, TaskRequestDTO data){
         Task task = this.taskRepository.findById(id).orElseThrow(TaskDoesNotExistException::new);
         userPermission(id);
 
-        task.setTitle(data.title());
-        task.setDescription(data.description());
-        task.setPriority(data.priority());
-        task.setStartAt(data.startAt());
-        task.setEndAt(data.endAt());
+        task.setTitle(data.getTitle());
+        task.setDescription(data.getDescription());
+        task.setPriority(data.getPriority());
+        task.setStartAt(data.getStartAt());
+        task.setEndAt(data.getEndAt());
 
         this.taskRepository.save(task);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -120,14 +123,14 @@ public class  TaskService {
         }
     }
 
-    private void dateValidation(TaskRequestDTO data){
-        Date currentDate = new Date();
+    private void dateValidation(TaskRequestDTO data) {
+        LocalDate currentDate = LocalDate.now();
 
-        if(data.getStartAt().getTime() < currentDate.getTime()){
+        if (data.getStartAt().isBefore(currentDate)) {
             throw new PreviousDateTaskException();
         }
 
-        if(data.getEndAt().getTime() < data.getStartAt().getTime()){
+        if (data.getEndAt().isBefore(data.getStartAt())) {
             throw new InvalidDateRangeException();
         }
     }
