@@ -1,36 +1,47 @@
 package com.todolist.api.dtos;
 
-import com.todolist.api.domain.role.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.todolist.api.domain.role.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserRequestDTO {
 
-    @NotEmpty(message = "Enter the name")
-    @Size(max = 50, message = "Name very long")
+    @NotEmpty(message = "Insira o nome")
+    @Size(max = 50, message = "Nome muito longo")
     private String name;
 
-    @NotEmpty(message = "Enter the username")
-    @Size(max = 50, message = "Username very long")
-    @Pattern(regexp = "\\S+", message = "The username cannot contain blanks")
-    @Pattern(regexp = "[^\\p{M}]*", message = "The username cannot contain accents")
+    @NotEmpty(message = "Insira o username")
+    @Size(max = 50, message = "Username muito longo")
+    @Pattern(regexp = "\\S+", message = "O username não pode conter espaços em branco")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9]*$",
+            message = "O username não pode conter acentos"
+    )
     private String username;
 
-    @Email(message = "Enter a valid email")
-    @NotEmpty(message = "Enter the email")
-    @Size(max = 100, message = "email very long")
+    @Email(message = "Insira um email válido")
+    @NotEmpty(message = "Insira o email")
+    @Size(max = 100, message = "email muito longo")
     private String email;
 
     private String photo;
 
-    @NotEmpty(message = "Enter the password")
-    @Size(max = 70, message = "Password very long")
-    @Pattern(regexp = "\\S+", message = "The password cannot contain blanks")
+    @NotEmpty(message = "Insira a senha")
+    @Size(max = 70, message = "Password muito longo")
+    @Pattern(regexp = "\\S+", message = "A senha não pode conter espaços em branco")
+    @Pattern(
+            //regexp = "[^\\p{M}]*",
+            regexp = "^[a-zA-Z0-9]*$",
+            message = "A senha não pode conter acentos"
+    )
     private String password;
 
     @JsonIgnore

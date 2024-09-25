@@ -29,12 +29,6 @@ public class ResExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
     }
 
-    @ExceptionHandler(PreviousDateTaskException.class)
-    public ResponseEntity<ErrorDTO> PreviousDateTaskHandler(PreviousDateTaskException ex){
-        ErrorDTO message = new ErrorDTO(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
     @ExceptionHandler(InvalidDateRangeException.class)
     public ResponseEntity<ErrorDTO> InvalidDateRangeHandler(InvalidDateRangeException ex){
         ErrorDTO message = new ErrorDTO(ex.getMessage());
@@ -43,6 +37,18 @@ public class ResExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(TaskDoesNotExistException.class)
     public ResponseEntity<ErrorDTO> TaskDoesNotExistHandler(TaskDoesNotExistException ex){
+        ErrorDTO message = new ErrorDTO(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+    }
+
+    @ExceptionHandler(InvalidStatusException.class)
+    public ResponseEntity<ErrorDTO> InvalidStatusHandler(InvalidStatusException ex){
+        ErrorDTO message = new ErrorDTO(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+    }
+
+    @ExceptionHandler(InvalidPriorityException.class)
+    public ResponseEntity<ErrorDTO> InvalidPriorityHandler(InvalidPriorityException ex){
         ErrorDTO message = new ErrorDTO(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }

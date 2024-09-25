@@ -3,36 +3,36 @@ package com.todolist.api.dtos;
 import java.time.LocalDate;
 
 import com.todolist.api.domain.priority.Priority;
+import com.todolist.api.domain.status.Status;
 import com.todolist.api.domain.user.User;
-import com.todolist.api.enums.Status;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TaskRequestDTO {
 
-    @NotEmpty(message = "Enter the title")
-    @Size(max = 50,message = "Very long title")
+    @NotEmpty(message = "Insira o título")
+    @Size(max = 50,message = "Título muito longo")
     private String title;
 
-    @NotEmpty(message = "Enter the description")
-    @Size(max = 180, message = "Very long description")
+    @NotEmpty(message = "Insira a descrição")
+    @Size(max = 180, message = "Descrição muito longa")
     private String description;
 
-    @NotNull(message = "Enter the start date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDate startAt;
-
-    @NotNull(message = "Enter the end date")
+    @NotNull(message = "Insira a data de término")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDate endAt;
 
-    @NotNull(message = "Enter the priority")
+    @NotNull(message = "Insira a prioridade")
     private Priority priority;
 
+    //@ValidEnum(enumClass = Status.class, message = "Invalid status value")
     private Status status;
 
     private User user;

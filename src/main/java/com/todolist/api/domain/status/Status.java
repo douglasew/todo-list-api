@@ -1,4 +1,4 @@
-package com.todolist.api.domain.priority;
+package com.todolist.api.domain.status;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,17 +8,16 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "priorities")
-public class Priority {
+public class Status {
     @Id
     private Long id;
     private String name;
 
     public enum Values {
-        LOW(1L, "LOW"),
-        MEDIUM(2L, "MEDIUM"),
-        HIGH(3L, "HIGH"),
-        URGENT(4L, "URGENT");
+        PENDING(1L, "PENDING"),
+        SUCCESS(2L, "SUCCESS"),
+        DELAYED(3L, "DELAYED"),
+        CANCELED(4L, "CANCELED");
 
         private Long id;
         private String name;
@@ -28,8 +27,8 @@ public class Priority {
             this.name = name;
         }
 
-        public Priority toPriority() {
-            return new Priority(id, name);
+        public Status toStatus() {
+            return new Status(id, name);
         }
     }
 }

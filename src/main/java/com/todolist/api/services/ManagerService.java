@@ -37,7 +37,7 @@ public class ManagerService {
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
         data.setPassword(encryptedPassword);
-        data.setRole(new Role(1L,"ADMIN"));
+        data.setRole(Role.Values.ADMIN.toRole());
 
          User newUser = new User(data);
 

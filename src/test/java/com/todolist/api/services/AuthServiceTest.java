@@ -1,7 +1,7 @@
 package com.todolist.api.services;
 
 import com.todolist.api.domain.user.User;
-import com.todolist.api.dtos.AuthDTO;
+import com.todolist.api.dtos.AuthRequestDTO;
 import com.todolist.api.dtos.AuthResponseDTO;
 import com.todolist.api.dtos.UserRequestDTO;
 
@@ -51,11 +51,9 @@ class AuthServiceTest {
 
     @Test
     void loginSuccess() {
-        AuthDTO authDTO = new AuthDTO();
-        authDTO.setUsername("teste");
-        authDTO.setUsername("12345");
+        AuthRequestDTO authDTO = new AuthRequestDTO("teste", "12345");
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authDTO.getUsername(), authDTO.getPassword());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authDTO.username(), authDTO.password());
         Authentication auth = mock(Authentication.class);
         when(authenticationManager.authenticate(token)).thenReturn(auth);
 
@@ -71,15 +69,12 @@ class AuthServiceTest {
         verify(jwtService, times(1)).generateToken(auth);
     }
 
-
     @Test
     @DisplayName("should return error when logging in with wrong credentials")
     void loginFailure() {
-        AuthDTO authDTO = new AuthDTO();
-        authDTO.setUsername("teste");
-        authDTO.setUsername("12345");
+        AuthRequestDTO authDTO = new AuthRequestDTO("teste", "12345");
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authDTO.getUsername(), authDTO.getPassword());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authDTO.username(), authDTO.password());
         when(authenticationManager.authenticate(token)).thenThrow(new BadCredentialsException("Invalid credentials"));
         BadCredentialsException exception = assertThrows(BadCredentialsException.class,
                 () -> authService.login(authDTO));
@@ -115,7 +110,6 @@ class AuthServiceTest {
     @Test
     @DisplayName("should give an exception when an email already exists")
     void RegisterEmailAlreadyExists() {
-        // Mocking the loadUserByUsername method to return null
         when(userDetailsService.loadUserByUsername(anyString())).thenReturn(null);
         when(userRepository.findByEmail(anyString())).thenReturn(new User());
 
@@ -146,4 +140,5 @@ class AuthServiceTest {
 
         assertEquals("Username already registered", exception.getMessage());
     }
+
 }

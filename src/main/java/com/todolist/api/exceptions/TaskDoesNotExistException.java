@@ -3,7 +3,7 @@ package com.todolist.api.exceptions;
 public class TaskDoesNotExistException extends RuntimeException{
 
     public TaskDoesNotExistException() {
-        super("Task does not exist");
+        super("A tarefa não existe");
     }
 
     public TaskDoesNotExistException(String message) {

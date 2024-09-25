@@ -1,14 +1,13 @@
 package com.todolist.api.services;
 
+import com.todolist.api.domain.status.Status;
 import com.todolist.api.domain.task.Task;
 import com.todolist.api.domain.user.User;
 import com.todolist.api.dtos.TaskRequestDTO;
 import com.todolist.api.dtos.TaskResponseDTO;
-import com.todolist.api.enums.Status;
-import com.todolist.api.exceptions.InvalidDateRangeException;
-import com.todolist.api.exceptions.PreviousDateTaskException;
-import com.todolist.api.exceptions.TaskDoesNotExistException;
-import com.todolist.api.exceptions.UnauthorizedUserException;
+import com.todolist.api.exceptions.*;
+import com.todolist.api.repositories.PriorityRepository;
+import com.todolist.api.repositories.StatusRepository;
 import com.todolist.api.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,12 +32,23 @@ public class  TaskService {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private PriorityRepository priorityRepository;
+
+    @Autowired
+    private StatusRepository statusRepository;
+
     public ResponseEntity<Object> create(TaskRequestDTO data){
         User user = user();
 
         dateValidation(data);
         data.setUser((User) user);
-        data.setStatus(Status.IN_PROGRESS);
+        data.setStatus(Status.Values.PENDING.toStatus());
+
+        if(priorityRepository.findById(data.getPriority().getId()).isEmpty()){
+            throw new InvalidPriorityException();
+        }
+
         var newTask = new Task(data);
         this.taskRepository.save(newTask);
 
@@ -62,9 +72,8 @@ public class  TaskService {
                 task.getTitle(),
                 task.getDescription(),
                 task.getPriority().getName(),
-                task.getStartAt(),
                 task.getEndAt(),
-                task.getStatus()
+                task.getStatus().getName()
         ));
     }
 
@@ -79,23 +88,30 @@ public class  TaskService {
                 task.getTitle(),
                 task.getDescription(),
                 task.getPriority().getName(),
-                task.getStartAt(),
                 task.getEndAt(),
-                task.getStatus()
+                task.getStatus().getName()
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(taskResponse);
     }
 
-    public  ResponseEntity<TaskRequestDTO> update(String id, TaskRequestDTO data){
+    public ResponseEntity<TaskRequestDTO> update(String id, TaskRequestDTO data){
         Task task = this.taskRepository.findById(id).orElseThrow(TaskDoesNotExistException::new);
         userPermission(id);
+
+        if(priorityRepository.findById(data.getPriority().getId()).isEmpty()){
+            throw new InvalidPriorityException();
+        }
+
+        if(statusRepository.findById(data.getStatus().getId()).isEmpty()){
+            throw new InvalidStatusException();
+        }
 
         task.setTitle(data.getTitle());
         task.setDescription(data.getDescription());
         task.setPriority(data.getPriority());
-        task.setStartAt(data.getStartAt());
         task.setEndAt(data.getEndAt());
+        task.setStatus(data.getStatus());
 
         this.taskRepository.save(task);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -106,6 +122,10 @@ public class  TaskService {
 
         this.taskRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Atividade deletada");
+    }
+
+    public void checkStatus(LocalDate localDate){
+        taskRepository.markLateTasksAsCompleted(localDate);
     }
 
     private User user(){
@@ -126,11 +146,7 @@ public class  TaskService {
     private void dateValidation(TaskRequestDTO data) {
         LocalDate currentDate = LocalDate.now();
 
-        if (data.getStartAt().isBefore(currentDate)) {
-            throw new PreviousDateTaskException();
-        }
-
-        if (data.getEndAt().isBefore(data.getStartAt())) {
+        if (data.getEndAt().isBefore(currentDate)) {
             throw new InvalidDateRangeException();
         }
     }

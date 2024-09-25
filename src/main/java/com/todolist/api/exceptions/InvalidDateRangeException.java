@@ -3,7 +3,7 @@ package com.todolist.api.exceptions;
 public class InvalidDateRangeException extends RuntimeException{
 
     public InvalidDateRangeException() {
-        super("The end date must be greater than the start date");
+        super("A data de término deve ser posterior à data atual");
     }
 
     public InvalidDateRangeException(String message) {

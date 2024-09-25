@@ -2,7 +2,7 @@ package com.todolist.api.services;
 
 import com.todolist.api.domain.role.Role;
 import com.todolist.api.domain.user.User;
-import com.todolist.api.dtos.AuthDTO;
+import com.todolist.api.dtos.AuthRequestDTO;
 import com.todolist.api.dtos.AuthResponseDTO;
 import com.todolist.api.dtos.UserRequestDTO;
 import com.todolist.api.exceptions.EmailAlreadyExistException;
@@ -31,8 +31,8 @@ public class AuthService {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    public ResponseEntity<AuthResponseDTO> login(AuthDTO data){
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.getUsername(), data.getPassword());
+    public ResponseEntity<AuthResponseDTO> login(AuthRequestDTO data){
+        var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
 
         var auth = authenticationManager.authenticate(usernamePassword);
 
@@ -53,7 +53,7 @@ public class AuthService {
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
         data.setPassword(encryptedPassword);
-        data.setRole(new Role(2L, "USER"));
+        data.setRole(Role.Values.USER.toRole());
         var newuser = new User(data);
 
         this.userRepository.save(newuser);
