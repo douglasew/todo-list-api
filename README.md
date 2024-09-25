@@ -4,7 +4,7 @@ Esta é uma API TodoList desenvolvida em Spring Boot. Ela permite criar, listar,
 
 ## Requisitos
 
-- Java Development Kit (JDK) 17
+- Java Development Kit (JDK) 21
 - Docker e Docker Compose (para executar a aplicação em contêineres)
 
 ## Configuração
@@ -19,13 +19,6 @@ git clone https://github.com/douglasew/todo-list-api
 
 ```sh
 cd todo-list-api
-```
-
-3. Execute o Docker Compose para subir os contêineres da aplicação e do banco de dados:
-
-```sh
-cd docker
-docker-compose up
 ```
 
 ## Executando a aplicação
@@ -50,7 +43,7 @@ java -jar target/todo-list-api.jar
 
 ## 🚀 Tecnologias utilizadas
 
-- Java 17
+- Java 21
 - Spring Boot
 - Spring Security 6
 - OAuth2 Resource Server
